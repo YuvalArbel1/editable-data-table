@@ -23,15 +23,43 @@ const TableCell = ({value, type, options, onUpdate, columnId}) => {
 
     // Save the new value
     const handleSave = () => {
-        // Convert string to number if needed
-        if (type === 'number') {
-            onUpdate(Number(editValue));
-        } else if (type === 'boolean') {
-            onUpdate(editValue === 'true');
-        } else {
-            onUpdate(editValue);
+        try {
+            // Validate and convert based on type
+            if (type === 'number') {
+                const numValue = Number(editValue);
+                // Check if it's a valid number
+                if (isNaN(numValue)) {
+                    alert('Please enter a valid number');
+                    setEditValue(value); // Reset to original
+                    setIsEditing(false);
+                    return;
+                }
+                onUpdate(numValue);
+            } else if (type === 'boolean') {
+                // Convert string to boolean
+                onUpdate(editValue === 'true');
+            } else if (type === 'select') {
+                // Validate that the value is in the options
+                if (options && !options.includes(editValue)) {
+                    alert('Please select a valid option');
+                    setEditValue(value); // Reset to original
+                    setIsEditing(false);
+                    return;
+                }
+                onUpdate(editValue);
+            } else {
+                // For string type - trim whitespace
+                const trimmedValue = editValue.trim();
+                onUpdate(trimmedValue);
+            }
+
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error saving cell value:', error);
+            alert('An error occurred while saving. Please try again.');
+            setEditValue(value);
+            setIsEditing(false);
         }
-        setIsEditing(false);
     };
 
     // Handle Enter key

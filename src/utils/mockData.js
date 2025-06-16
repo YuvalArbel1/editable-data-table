@@ -6,10 +6,19 @@ import faker from 'faker';
  * @returns {Object} Object containing columns and data arrays
  */
 export const generateMockData = (rowCount = 100) => {
-    // Define our columns with all required types
+    /**
+     * Column Schema (matches assignment requirements exactly):
+     * - id: string (required) - unique column identifier
+     * - ordinalNo: number (required) - column position
+     * - title: string (required) - display name
+     * - type: string (required) - data type
+     * - width?: number (optional) - column width
+     *
+     * Note: Per assignment Q&A, additional properties can be added for extended functionality
+     */
     const columns = [
-        {id: 'id', ordinalNo: 0, title: 'ID', type: 'string', width: 80},
-        {id: 'name', ordinalNo: 1, title: 'Name', type: 'string', width: 200},
+        {id: 'id', ordinalNo: 0, title: 'ID', type: 'string'},
+        {id: 'name', ordinalNo: 1, title: 'Name', type: 'string'},
         {id: 'age', ordinalNo: 2, title: 'Age', type: 'number', width: 100},
         {id: 'email', ordinalNo: 3, title: 'Email', type: 'string', width: 250},
         {id: 'active', ordinalNo: 4, title: 'Active', type: 'boolean', width: 100},
@@ -18,8 +27,7 @@ export const generateMockData = (rowCount = 100) => {
             ordinalNo: 5,
             title: 'Department',
             type: 'select',
-            width: 150,
-            options: ['Sales', 'Marketing', 'Engineering', 'HR', 'Finance'] // Added for select type
+            width: 150
         },
         {id: 'salary', ordinalNo: 6, title: 'Salary', type: 'number', width: 120},
     ];

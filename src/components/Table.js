@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import TableCell from './TableCell';
 import ColumnFilter from './ColumnFilter';
 
@@ -24,6 +24,38 @@ const Table = ({columns, initialData}) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage] = useState(20);
 
+    // Handle missing width field for column
+    const getColumnWidth = (column) => {
+        // Use provided width if exists
+        if (column.width) return column.width;
+
+        // Default widths based on type
+        switch (column.type) {
+            case 'boolean':
+                return 100;
+            case 'number':
+                return 120;
+            case 'select':
+                return 150;
+            case 'string':
+            default:
+                if (column.id.toLowerCase().includes('email')) return 250;
+                if (column.id.toLowerCase().includes('id')) return 100;
+                if (column.id.toLowerCase().includes('name')) return 200;
+                // Default for strings
+                return 180;
+        }
+    };
+
+    // Handle select field
+    const getSelectOptions = (columnId) => {
+        const uniqueValues = [...new Set(
+            data
+                .map(row => row[columnId])
+                .filter(value => value != null && value !== '')
+        )];
+        return uniqueValues.sort();
+    };
 
     // Handle cell value update
     const handleCellUpdate = (rowId, columnId, newValue) => {
@@ -141,7 +173,7 @@ const Table = ({columns, initialData}) => {
                             {displayColumns.map(column => (
                                 <th
                                     key={column.id}
-                                    style={{width: column.width || 'auto'}}
+                                    style={{width: getColumnWidth(column)}}
                                     className="p-3 text-left"
                                 >
                                     {column.title}
@@ -174,11 +206,9 @@ const Table = ({columns, initialData}) => {
                                         key={`${row.id}-${column.id}`}
                                         value={row[column.id]}
                                         type={column.type}
-                                        options={column.options}
+                                        options={column.type === 'select' ? getSelectOptions(column.id) : []}
                                         columnId={column.id}
-                                        onUpdate={(newValue) =>
-                                            handleCellUpdate(row.id, column.id, newValue)
-                                        }
+                                        onUpdate={(newValue) => handleCellUpdate(row.id, column.id, newValue)}
                                     />
                                 ))}
                             </tr>

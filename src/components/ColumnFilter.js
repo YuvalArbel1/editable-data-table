@@ -17,6 +17,8 @@ const ColumnFilter = ({columns, visibleColumns, onToggleColumn}) => {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="px-4 py-2 border rounded bg-white hover:bg-gray-50"
+                aria-label="Toggle column filter"
+                aria-expanded={isOpen}
             >
                 Filter Columns {isOpen ? '↑' : '↓'}
             </button>

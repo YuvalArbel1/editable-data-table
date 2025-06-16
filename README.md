@@ -29,7 +29,7 @@ Opens at [http://localhost:3000](http://localhost:3000)
 
 ## How to Use
 
-- **Edit**: Click any cell (except ID)
+- **Edit**: Click any cell
 - **Sort**: Click column headers with arrows
 - **Filter**: Use "Filter Columns" dropdown
 - **Navigate**: Previous/Next buttons

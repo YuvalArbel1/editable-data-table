@@ -17,11 +17,6 @@ const TableCell = ({value, type, options, onUpdate, columnId}) => {
 
     // Start editing when cell is clicked
     const handleClick = () => {
-        // Don't allow editing the ID column
-        if (columnId === 'id') {
-            alert('Cannot edit ID - it must be unique for each row!');
-            return;
-        }
         setIsEditing(true);
         setEditValue(value);
     };

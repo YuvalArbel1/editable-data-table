@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import TableCell from './TableCell';
 import ColumnFilter from './ColumnFilter';
 
@@ -24,6 +24,7 @@ const Table = ({columns, initialData}) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage] = useState(20);
 
+
     // Handle cell value update
     const handleCellUpdate = (rowId, columnId, newValue) => {
         const updatedData = data.map(row => {
@@ -46,11 +47,6 @@ const Table = ({columns, initialData}) => {
 
     // Handle sorting
     const handleSort = (columnId) => {
-        // Only sort specific columns
-        if (!['id', 'name', 'age', 'email', 'salary'].includes(columnId)) {
-            return;
-        }
-
         let direction = 'asc';
         if (sortColumn === columnId && sortDirection === 'asc') {
             direction = 'desc';
@@ -67,27 +63,42 @@ const Table = ({columns, initialData}) => {
         let aValue = a[sortColumn];
         let bValue = b[sortColumn];
 
-        // Special handling for ID column
-        if (sortColumn === 'id') {
-            // Extract the number from "row-X"
-            const aNum = parseInt(aValue.split('-')[1]);
-            const bNum = parseInt(bValue.split('-')[1]);
+        // Handle null/undefined/empty
+        if (aValue == null || aValue === '') return 1;
+        if (bValue == null || bValue === '') return -1;
+
+        // Handle arrays
+        if (Array.isArray(aValue)) aValue = aValue.join(', ');
+        if (Array.isArray(bValue)) bValue = bValue.join(', ');
+
+        // Handle objects (convert to string)
+        if (typeof aValue === 'object') aValue = JSON.stringify(aValue);
+        if (typeof bValue === 'object') bValue = JSON.stringify(bValue);
+
+        // Boolean sorting (true first, then false)
+        if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
+            if (sortDirection === 'asc') {
+                return aValue === bValue ? 0 : aValue ? -1 : 1;
+            } else {
+                return aValue === bValue ? 0 : aValue ? 1 : -1;
+            }
+        }
+
+        // Number sorting (including number strings)
+        const aNum = Number(aValue);
+        const bNum = Number(bValue);
+        if (!isNaN(aNum) && !isNaN(bNum)) {
             return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
         }
 
-        // Handle numbers
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
-        }
-
-        // Handle strings
-        aValue = String(aValue).toLowerCase();
-        bValue = String(bValue).toLowerCase();
+        // String sorting (fallback for everything else)
+        const aStr = String(aValue).toLowerCase();
+        const bStr = String(bValue).toLowerCase();
 
         if (sortDirection === 'asc') {
-            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+            return aStr < bStr ? -1 : aStr > bStr ? 1 : 0;
         } else {
-            return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+            return aStr > bStr ? -1 : aStr < bStr ? 1 : 0;
         }
     });
 
@@ -134,18 +145,22 @@ const Table = ({columns, initialData}) => {
                                     className="p-3 text-left"
                                 >
                                     {column.title}
-                                    {['id', 'name', 'age', 'email', 'salary'].includes(column.id) && (
-                                        <button
-                                            onClick={() => handleSort(column.id)}
-                                            className="ml-2 text-gray-500 hover:text-gray-700"
-                                        >
-                                            {sortColumn === column.id ? (
-                                                sortDirection === 'asc' ? '↑' : '↓'
-                                            ) : (
-                                                '↕'
-                                            )}
-                                        </button>
-                                    )}
+                                    <button
+                                        onClick={() => handleSort(column.id)}
+                                        className="ml-2 text-gray-500 hover:text-gray-700"
+                                    >
+                                        {(() => {
+                                            if (sortColumn === column.id) {
+                                                if (sortDirection === 'asc') {
+                                                    return '↑';
+                                                } else {
+                                                    return '↓';
+                                                }
+                                            } else {
+                                                return '↕';
+                                            }
+                                        })()}
+                                    </button>
                                 </th>
                             ))}
                         </tr>

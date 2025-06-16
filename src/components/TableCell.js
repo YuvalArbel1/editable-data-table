@@ -46,48 +46,54 @@ const TableCell = ({value, type, options, onUpdate, columnId}) => {
         }
     };
 
-    // Show edit input
+// Show edit input
     if (isEditing) {
-        return (
-            <td className="p-3">
-                {type === 'boolean' ? (
-                    <select
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onBlur={handleSave}
-                        onKeyDown={handleKeyDown}
-                        className="border rounded px-2 py-1"
-                        autoFocus
-                    >
-                        <option value="true">True</option>
-                        <option value="false">False</option>
-                    </select>
-                ) : type === 'select' ? (
-                    <select
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onBlur={handleSave}
-                        onKeyDown={handleKeyDown}
-                        className="border rounded px-2 py-1"
-                        autoFocus
-                    >
-                        {options.map(option => (
-                            <option key={option} value={option}>{option}</option>
-                        ))}
-                    </select>
-                ) : (
-                    <input
-                        type={type === 'number' ? 'number' : 'text'}
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onBlur={handleSave}
-                        onKeyDown={handleKeyDown}
-                        className="border rounded px-2 py-1"
-                        autoFocus
-                    />
-                )}
-            </td>
-        );
+        let inputElement;
+
+        if (type === 'boolean') {
+            inputElement = (
+                <select
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={handleSave}
+                    onKeyDown={handleKeyDown}
+                    className="border rounded px-2 py-1"
+                    autoFocus
+                >
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                </select>
+            );
+        } else if (type === 'select') {
+            inputElement = (
+                <select
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={handleSave}
+                    onKeyDown={handleKeyDown}
+                    className="border rounded px-2 py-1"
+                    autoFocus
+                >
+                    {options.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                    ))}
+                </select>
+            );
+        } else {
+            inputElement = (
+                <input
+                    type={type === 'number' ? 'number' : 'text'}
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={handleSave}
+                    onKeyDown={handleKeyDown}
+                    className="border rounded px-2 py-1"
+                    autoFocus
+                />
+            );
+        }
+
+        return <td className="p-3">{inputElement}</td>;
     }
 
     // Show value (not editing)
